@@ -39,18 +39,18 @@ type Client struct {
 	wsAddrIp   string
 	wsAddrPort string
 	msgType    int
-	token      string
+	header     map[string]string
 }
 
 // TargetHandler defines how to handle different targets dynamically
-type TargetHandler func(uuid string) (target string, err error)
+type TargetHandler func(uuid string) (target string, isUdp bool, err error)
 
 // NewClient creates a new TCPOverWebsocket client instance
-func NewClient(wsAddr, token string) (*Client, error) {
+func NewClient(wsAddr string, header map[string]string) (*Client, error) {
 
 	return &Client{
 		wsAddr:  wsAddr,
-		token:   token,
+		header:  header,
 		msgType: websocket.BinaryMessage,
 	}, nil
 }
@@ -132,7 +132,7 @@ func (s *Server) HandleConnection(wsConn *websocket.Conn, targetHandler TargetHa
 	}
 
 	// Get target from handler
-	target, err := targetHandler(uuid)
+	target, isUdp, err := targetHandler(uuid)
 	if err != nil {
 		log.Print("target handler error: ", err)
 		wsConn.WriteMessage(websocket.TextMessage, []byte("close"))
@@ -150,8 +150,12 @@ func (s *Server) HandleConnection(wsConn *websocket.Conn, targetHandler TargetHa
 		conn.wsConn = wsConn
 		s.writeErrorBufWs(conn)
 	} else {
-
-		conn = s.createTCPConnection(uuid, target, wsConn)
+		// Create new connection
+		if isUdp {
+			conn = s.createUDPConnection(uuid, target, wsConn)
+		} else {
+			conn = s.createTCPConnection(uuid, target, wsConn)
+		}
 
 		if conn == nil {
 			return
@@ -410,7 +414,9 @@ func (c *Client) handleConnection(localConn interface{}, uuid string, isUdp bool
 		Proxy:           http.ProxyFromEnvironment,
 	}
 	requestHeader := http.Header{}
-	requestHeader.Add("X-CINTE-HEADER", c.token)
+	for k, v := range c.header {
+		requestHeader.Set(k, v)
+	}
 	wsConn, _, err := dialer.Dial(c.wsAddr, requestHeader)
 	if err != nil {
 		return err
