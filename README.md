@@ -1,8 +1,28 @@
-# cgateway
+# 🛠️ cgateway
 
-这是一款由go编写的tcp over websocket 的接口
+**cgateway** 是一个由 **Go** 编写的 **TCP over WebSocket** 接口库。  
+它可以让你轻松地通过 WebSocket 建立 TCP 隧道，实现内网穿透、加密通信等功能。
 
-你只需要简单的 使用 cgateway.NewNewClient(url,header)或者 cgateway := cgateway.NewServer() 即可实现tcp over websocket隧道
+---
+
+## ✨ 特性
+- 支持 **TCP over WebSocket** 隧道
+- 轻量化、易于集成
+- **Client** 支持自定义 Header（可用于认证场景）
+- 内置心跳机制，确保长连接稳定性
+
+---
+
+## 📦 快速开始
+
+你只需要简单调用以下任意方法即可：
+```go
+// 创建客户端
+cgateway.NewClient(url, header)
+
+// 创建服务端
+cgateway := cgateway.NewServer()
+
 
 server代码示例
 `````go
