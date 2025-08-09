@@ -1,7 +1,6 @@
 # 🛠️ cgateway
 
 **cgateway** 是一个由 **Go** 编写的 **TCP over WebSocket** 接口库。  
-它可以让你轻松地通过 WebSocket 建立 TCP 隧道，实现内网穿透、加密通信等功能。
 
 ---
 
