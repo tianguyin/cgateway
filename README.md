@@ -65,7 +65,7 @@ func ConnectServer(url, localAddr, gatewayId string) {
 	headers := map[string]string{
 		"C-Gateway-ID": gatewayId,
 	}
-	client, err := tcp.NewClient(url, headers)
+	client, err := cgateway.NewClient(url, headers)
 
 	if err != nil {
 		log.Fatal("创建客户端失败:", err)
