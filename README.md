@@ -22,7 +22,7 @@ cgateway.NewClient(url, header)
 
 // 创建服务端
 cgateway := cgateway.NewServer()
-
+`````
 
 server代码示例
 `````go
